@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint .",
     "dev": "vite",
-    "build": "vite build",
+    "build": "npx vite build",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -15,6 +15,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-scripts": "^5.0.1",
+    "rm": "^0.1.8",
     "socket.io-client": "^4.8.1",
     "tailwindcss": "^4.1.10"
   },
