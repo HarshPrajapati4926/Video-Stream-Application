@@ -7,28 +7,32 @@ const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 const server = http.createServer(app);
+
 const io = socketIo(server, {
   cors: {
-    origin: '*', // use '*' in production or set your Render domain
+    origin: '*',
     methods: ['GET', 'POST'],
   },
 });
 
-const sessions = {}; // Map roomId => socketId
+// Stores roomId -> senderSocketId
+const sessions = {};
 
 io.on('connection', (socket) => {
-  console.log('Client connected');
+  console.log('Client connected:', socket.id);
 
   socket.on('create-room', () => {
     const roomId = uuidv4();
     sessions[roomId] = socket.id;
     socket.emit('room-created', roomId);
+    console.log(`Room created: ${roomId}`);
   });
 
   socket.on('join-room', (roomId) => {
     const senderSocketId = sessions[roomId];
     if (senderSocketId) {
       socket.to(senderSocketId).emit('viewer-joined', socket.id);
+      console.log(`Viewer ${socket.id} joined room ${roomId}`);
     }
   });
 
@@ -45,20 +49,25 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log('Client disconnected');
+    console.log('Client disconnected:', socket.id);
+    for (const roomId in sessions) {
+      if (sessions[roomId] === socket.id) {
+        delete sessions[roomId];
+      }
+    }
   });
 });
 
-// 🔧 Serve static files from the React frontend
+// Serve static React files from client build
 app.use(express.static(path.join(__dirname, '../client/build')));
 
-// 🔁 Serve index.html on all unmatched routes (SPA fallback)
-app.get('*', (req, res) => {
+// ✅ Fallback route for SPA (fixes path-to-regexp error)
+app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/build/index.html'));
 });
 
-// ✅ Use dynamic port for Render
-const PORT = process.env.PORT || 3000;
+// Start server
+const PORT = 3000;
 server.listen(PORT, () => {
-  console.log(`Server listening at http://localhost:${PORT}`);
+  console.log(`✅ Server running at http://localhost:${PORT}`);
 });
