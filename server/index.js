@@ -1,15 +1,15 @@
-
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
+const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: 'http://localhost:5173',
+    origin: '*', // use '*' in production or set your Render domain
     methods: ['GET', 'POST'],
   },
 });
@@ -49,15 +49,16 @@ io.on('connection', (socket) => {
   });
 });
 
-const PORT = 3000;
-server.listen(PORT, () => {
-  console.log(`Server listening at http://localhost:${PORT}`);
-});
-
-
-const path = require('path');
+// 🔧 Serve static files from the React frontend
 app.use(express.static(path.join(__dirname, '../client/build')));
 
+// 🔁 Serve index.html on all unmatched routes (SPA fallback)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/build/index.html'));
+});
+
+// ✅ Use dynamic port for Render
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Server listening at http://localhost:${PORT}`);
 });
