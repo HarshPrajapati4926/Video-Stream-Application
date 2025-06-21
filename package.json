@@ -1,0 +1,22 @@
+{
+  "name": "video-stream-project",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+     "start": "node server/index.js",
+    "build": "npm install --prefix client && npm run build --prefix client && npm install --prefix server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HarshPrajapati4926/Video-Stream-Application.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HarshPrajapati4926/Video-Stream-Application/issues"
+  },
+  "homepage": "https://github.com/HarshPrajapati4926/Video-Stream-Application#readme",
+  "description": ""
+}
